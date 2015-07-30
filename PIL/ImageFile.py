@@ -33,6 +33,7 @@ import io
 import os
 import sys
 import traceback
+import struct
 
 MAXBLOCK = 65536
 
@@ -95,19 +96,7 @@ class ImageFile(Image.Image):
 
         try:
             self._open()
-        except IndexError as v:  # end of data
-            if Image.DEBUG > 1:
-                traceback.print_exc()
-            raise SyntaxError(v)
-        except TypeError as v:  # end of data (ord)
-            if Image.DEBUG > 1:
-                traceback.print_exc()
-            raise SyntaxError(v)
-        except KeyError as v:  # unsupported mode
-            if Image.DEBUG > 1:
-                traceback.print_exc()
-            raise SyntaxError(v)
-        except EOFError as v:  # got header but not the first frame
+        except (IndexError, TypeError, KeyError, EOFError, struct.error) as v:
             if Image.DEBUG > 1:
                 traceback.print_exc()
             raise SyntaxError(v)
@@ -211,7 +200,7 @@ class ImageFile(Image.Image):
                 while True:
                     try:
                         s = read(self.decodermaxblock)
-                    except IndexError as ie:  # truncated png/gif
+                    except (IndexError, struct.error) as ie:  # truncated png/gif
                         if LOAD_TRUNCATED_IMAGES:
                             break
                         else:
