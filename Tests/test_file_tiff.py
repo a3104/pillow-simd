@@ -80,8 +80,9 @@ class TestFileTiff(PillowTestCase):
         self.assertEqual(im.info['dpi'], (72., 72.))
 
     def test_bad_exif(self):
+        i = Image.open('Tests/images/hopper_bad_exif.jpg')
         try:
-            Image.open('Tests/images/hopper_bad_exif.jpg')._getexif()
+            self.assert_warning(UserWarning, lambda: i._getexif())
         except struct.error:
             self.fail("Bad EXIF data should not pass incorrect values to _binary unpack")
 
