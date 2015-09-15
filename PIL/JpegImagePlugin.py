@@ -422,7 +422,7 @@ def _getexif(self):
     # get exif extension
     try:
         file.seek(exif[0x8769])
-    except KeyError:
+    except (KeyError, TypeError):
         pass
     else:
         info = TiffImagePlugin.ImageFileDirectory(head)
@@ -431,8 +431,11 @@ def _getexif(self):
             exif[key] = _fixup(value)
     # get gpsinfo extension
     try:
+        # exif field 0x8825 is an offset pointer to the location
+        # of the nested embedded gps exif ifd.
+        # It should be a long, but may be corrupted.
         file.seek(exif[0x8825])
-    except KeyError:
+    except (KeyError, TypeError):
         pass
     else:
         info = TiffImagePlugin.ImageFileDirectory(head)

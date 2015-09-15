@@ -27,7 +27,6 @@ from PIL import Image, ImageFile, _binary
 # helpers
 
 i16 = _binary.i16le
-i32 = _binary.i32le
 
 
 ##
